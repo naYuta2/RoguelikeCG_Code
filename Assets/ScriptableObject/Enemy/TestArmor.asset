@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 925ce83bd0792d3428a0bfe279d44f23, type: 3}
+  m_Name: TestArmor
+  m_EditorClassIdentifier: 
+  enemyName: DummyArmor
+  maxHP: 30
+  actions:
+  - actionType: 1
+    value: 5
+    enemy: {fileID: 0}
+  - actionType: 0
+    value: 3
+    enemy: {fileID: 0}
+  pattern: 1
+  sprite: {fileID: -1458140604, guid: fdf6c2cc88bce0a4a88e8593c9b0e3c7, type: 3}

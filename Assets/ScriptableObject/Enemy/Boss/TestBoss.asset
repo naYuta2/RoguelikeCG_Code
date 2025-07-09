@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 925ce83bd0792d3428a0bfe279d44f23, type: 3}
+  m_Name: TestBoss
+  m_EditorClassIdentifier: 
+  enemyName: Boss
+  maxHP: 40
+  actions:
+  - actionType: 0
+    value: 3
+    enemy: {fileID: 0}
+    summonTarget: {fileID: 0}
+  - actionType: 1
+    value: 10
+    enemy: {fileID: 0}
+    summonTarget: {fileID: 0}
+  - actionType: 0
+    value: 6
+    enemy: {fileID: 0}
+    summonTarget: {fileID: 0}
+  - actionType: 2
+    value: 1
+    enemy: {fileID: 0}
+    summonTarget: {fileID: 11400000, guid: 4db6a5710ca48d44c9688696a2932a95, type: 2}
+  pattern: 1
+  sprite: {fileID: -7222586295506853704, guid: 2294d68749850494eb63d5692c7b6ccf, type: 3}
+  isBoss: 1
