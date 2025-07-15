@@ -465,13 +465,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a0d175227af45804ba324cd1fb20eb2b, type: 2}
   - {fileID: 11400000, guid: 92555951964dcb447aeb88c26f6c53ba, type: 2}
   - {fileID: 11400000, guid: 89fb0484038f9aa4e9733b5c19acd0ac, type: 2}
-  - {fileID: 11400000, guid: c2d70d0e19d91c943a605522ff9f4829, type: 2}
+  - {fileID: 11400000, guid: 048cd571a1fc85a4c85b9277c6bbe70e, type: 2}
   playerStats: {fileID: 11400000, guid: 31d47f5328ccca34d8a07d92af721d11, type: 2}
   player: {fileID: 1398692536}
   events:
-  - {fileID: 11400000, guid: acdd8d7655257cb4e927af2845abd413, type: 2}
   - {fileID: 11400000, guid: d9471082fa1a7cb4b8545987da03387f, type: 2}
-  - {fileID: 11400000, guid: 39d943188e5d166478c41df7455015e3, type: 2}
   isEventRunning: 0
 --- !u!4 &187816517
 Transform:

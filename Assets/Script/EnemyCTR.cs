@@ -3,8 +3,9 @@ using UnityEngine.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
-public class EnemyCTR : MonoBehaviour, IDamageable
+public class EnemyCTR : MonoBehaviour, IDamageable, IBuffable
 {
     public Slider slider;
 
@@ -90,7 +91,7 @@ public class EnemyCTR : MonoBehaviour, IDamageable
 
     public void Update()
     {
-        hpText.text = $"{currentHP} / {maxHP}";
+        // hpText.text = $"{currentHP} / {maxHP}";
         guardText.text = $"{guardValue}";
     }
 
@@ -182,6 +183,7 @@ public class EnemyCTR : MonoBehaviour, IDamageable
     {
         guardValue = 0;
         turnCount += 1;
+        ApplyBuffEffectsEachTurn();
     }
 
     public EnemyAction DetermineEnemyAction()
@@ -226,5 +228,94 @@ public class EnemyCTR : MonoBehaviour, IDamageable
         }
         actionIcon.gameObject.SetActive(true);
         actionText.text = action.value.ToString();
+    }
+
+    public void AddBuff(Buff buff){
+        // 既に同じバフが存在しているか確認
+        var existingBuff = buffs.Find(b => b.buffType == buff.buffType);
+        // もし存在していれば、バフの値と持続時間を更新
+        if (existingBuff != null){
+            Debug.Log($"敵のバフを更新します");
+            existingBuff.value += buff.value;
+            if (buff.duration != -1){
+                existingBuff.duration += buff.duration;
+            }
+            Debug.Log($"敵のバフを更新: type={existingBuff.buffType}, value={existingBuff.value}, duration={existingBuff.duration}");
+        }
+        // 存在していなければバフを新たに追加
+        else{
+            Debug.Log($"敵のバフを追加します");
+            buffs.Add(buff);
+            Debug.Log($"敵のバフを追加: type={buff.buffType}, value={buff.value}, duration={buff.duration}");
+        }
+        UpdateBuffText(buffs[buffs.Count - 1]);
+    }
+
+    public void RemoveBuff(BuffType type){
+        buffs.RemoveAll(b => b.buffType == type);
+        Debug.Log($"敵のバフを削除: type={type}");
+    }
+
+    public void ApplyBuffEffectsEachTurn(){
+        foreach (var buff in buffs.ToList()){
+            ApplyBuffEffect(buff);
+            switch (buff.behaviorType){
+                case BuffBehaviorType.ValueDecreasing:
+                    buff.value--;
+                    if (buff.value <= 0){
+                        buffs.Remove(buff);
+                        Debug.Log($"バフを削除: {buff.name}");
+                    }
+                    UpdateBuffText(buff);
+                    break;
+                case BuffBehaviorType.DurationBased:
+                    buff.duration--;
+                    if (buff.duration <= 0){
+                        buffs.Remove(buff);
+                        Debug.Log($"バフを削除: {buff.name}");
+                    }
+                    break;
+                case BuffBehaviorType.Instant:
+                    buffs.Remove(buff);
+                    Debug.Log($"バフを削除: {buff.name}");
+                    break;
+                
+                case BuffBehaviorType.Permanent:
+                    // 永続効果は普通効果が消えないので何もしない
+                    break;
+
+                case BuffBehaviorType.ActionBased:
+                    // アクションベースのバフはターン開始時に何もしない…よな？
+                    break;
+                
+                default:
+                    Debug.LogWarning($"未知のバフタイプが検出されました: {buff.behaviorType}");
+                    break;
+            }
+        }
+    }
+
+    public void ApplyBuffEffect(Buff buff){
+        switch (buff.buffType){
+            case BuffType.Poison:
+                Damage(buff.value);
+                Debug.Log($"敵に毒ダメージを与えました: {buff.value}");
+                break;
+            default:
+                Debug.LogWarning($"未知のバフタイプが検出されました: {buff.buffType}");
+                break;
+        }
+    }
+
+    void UpdateBuffText(Buff buff){
+        Debug.Log("バフのテキストを更新");
+        switch (buff.buffType){
+            case BuffType.Poison:
+                hpText.text = $"{currentHP} / {maxHP} (Poison: {buff.value})";
+                break;
+            default:
+                Debug.LogWarning($"未知のバフタイプが検出されました: {buff.buffType}");
+                break;
+        }
     }
 }

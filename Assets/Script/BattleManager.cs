@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Linq;
 
 public class BattleManager : MonoBehaviour
 {
@@ -14,23 +15,19 @@ public class BattleManager : MonoBehaviour
     [SerializeField, ReadOnly]
     List<CardData> discardPile = new List<CardData>();
 
-    List<GameObject> enemies = new List<GameObject>();
-    List<EnemyAction> enemyActions = new List<EnemyAction>();
+    public List<GameObject> enemies = new List<GameObject>();
+    public List<EnemyAction> enemyActions = new List<EnemyAction>();
     List<CardData> deck;
 
     [SerializeField]
     StageData stageData;
 
-    bool player_turn;
-    bool player_turn_start;
-    bool enemy_turn;
-    bool enemy_turn_start;
+    public TurnManager turnManager {get; private set;}
+
     public bool inBattle {get; private set;}
     int currentCardCount = 0;
-    int turnCount;
 
-    [SerializeField]
-    int N;
+    public int N;
 
     [SerializeField]
     GameObject pref_card;
@@ -44,8 +41,7 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     GameObject gameManager;
 
-    [SerializeField]
-    GameObject player;
+    public GameObject player;
 
     [SerializeField]
     Button turnEndButton;
@@ -98,13 +94,12 @@ public class BattleManager : MonoBehaviour
 
     PlayerCTR playerCTR;
 
-    bool turnEnd;
-
     bool handOutCardFlag = false;
 
     void Awake(){
         if(Instance == null){
             Instance = this;
+            turnManager = this.GetComponent<TurnManager>();
         }
         else{
             Destroy(gameObject);
@@ -113,61 +108,66 @@ public class BattleManager : MonoBehaviour
     }
 
     void Start(){
-        turnCount = 0;
         currentCardCount = 0;
         battleCanvas.SetActive(false);
         mana = mana_MAX;
     }
 
+/*
     void Update(){
-        if(player_turn){
-            if (player_turn_start){
-                player.GetComponent<IDamageable>().TurnStart();
-                Debug.Log("ターンスタート");
-                mana = mana_MAX;
-                StartCoroutine(HandOutCardsCoroutine(N));
-                DeterminesEnemyActions();
-                turnCount += 1;
-                player_turn_start = false;
-            }
+        if(inBattle){
+            if(player_turn){
+                if (player_turn_start){
+                    player.GetComponent<IDamageable>().TurnStart();
+                    Debug.Log("ターンスタート");
+                    mana = mana_MAX;
+                    StartCoroutine(HandOutCardsCoroutine(N));
+                    DeterminesEnemyActions();
+                    turnCount += 1;
+                    player_turn_start = false;
+                }
 
-            if (turnEnd){
-                currentCardCount = 0;
-                player_turn = false;
-                StartCoroutine(DiscardHandCoroutine(() =>{
-                    enemy_turn = true;
-                    enemy_turn_start = true;
-                    turnEnd = false;
-                }));
-                foreach(GameObject enemy in enemies){
-                    enemy.GetComponent<IDamageable>().TurnStart();
+                if (turnEnd){
+                    currentCardCount = 0;
+                    player_turn = false;
+                    StartCoroutine(DiscardHandCoroutine(() =>{
+                        enemy_turn = true;
+                        enemy_turn_start = true;
+                        turnEnd = false;
+                    }));
+                    foreach(GameObject enemy in enemies.ToList()){
+                        enemy.GetComponent<IDamageable>().TurnStart();
+                    }
                 }
             }
-        }
-        else if (enemy_turn){
-            if (enemy_turn_start){
-                Debug.Log("敵ターン開始");
-                enemy_turn_start = false;
-                StartCoroutine(EnemyTurnCoroutine());
+            else if (enemy_turn){
+                if (enemy_turn_start){
+                    Debug.Log("敵ターン開始");
+                    enemy_turn_start = false;
+                    StartCoroutine(EnemyTurnCoroutine());
+                }
+            }
+
+            manaLabel.text = $"{mana} / {mana_MAX}";
+            if(handOutCardFlag){
+                turnEndButton.interactable = false;
+            }
+            else if(player_turn){
+                turnEndButton.interactable = (turnEnd) ? false : true;
+            }
+            else{
+                turnEndButton.interactable = false;
             }
         }
-
-        manaLabel.text = $"{mana} / {mana_MAX}";
-        if(handOutCardFlag){
-            turnEndButton.interactable = false;
-        }
-        else if(player_turn){
-            turnEndButton.interactable = (turnEnd) ? false : true;
-        }
-        else{
-            turnEndButton.interactable = false;
-        }
     }
+*/
+
+
 
     public void StartBattle(bool Ambush, List<EnemyStats> enemyList = null){
+        inBattle = true;
         GameManager.Instance.StartBattle();
         Debug.Log("バトル開始！");
-        turnCount = 0;
         currentCardCount = 0;
 
         EventUI.Instance.ShowBattleUI();
@@ -186,29 +186,31 @@ public class BattleManager : MonoBehaviour
         foreach (GameObject e in GameObject.FindGameObjectsWithTag("Enemy")){
             enemies.Add(e);
         }
-        if(Ambush){
-            Debug.Log("奇襲発生！");
-            enemy_turn = true;
-            enemy_turn_start = true;
-            player_turn = false;
+        playerCTR = player.GetComponent<PlayerCTR>();
+        if (turnManager != null){
+            turnManager.StartBattle();
         }
         else{
-            player_turn = true;
-            player_turn_start = true;
-            enemy_turn = false;
+            Debug.LogError("TurnManagerが見つかりません！");
         }
-        playerCTR = player.GetComponent<PlayerCTR>();
     }
 
-    void EndBattle(){
+    public void RestoreMana(){
+        mana = mana_MAX;
+        manaLabel.text = $"{mana} / {mana_MAX}";
+    }
+
+    public void EnablePlayerActions(){
+        turnEndButton.interactable = true;
+    }
+
+    public void DisablePlayerActions(){
+        turnEndButton.interactable = false;
+    }
+
+    public void EndBattle(){
         Debug.Log("バトル終了！");
-        player_turn = false;
-        enemy_turn = false;
-        turnEnd = false;
-        turnCount = 0;
         currentCardCount = 0;
-        player_turn_start = false;
-        enemy_turn_start = false;
         StartCoroutine(DiscardHandCoroutine(()=>{
             StartCoroutine(Delay(() =>{
                 mana = mana_MAX;
@@ -249,7 +251,7 @@ public class BattleManager : MonoBehaviour
         list = null;
     }
 
-    IEnumerator HandOutCardsCoroutine(int n){
+    public IEnumerator HandOutCardsCoroutine(int n){
         if (handOutCardFlag){
             yield break;
         }
@@ -336,8 +338,16 @@ public class BattleManager : MonoBehaviour
                         }
                         break;
                     
+                    case CardEffectDefine.CardEffect.Poison:
+                        Debug.Log($"毒: {cardEffect.value}");
+                        foreach(GameObject t in target){
+                            t.GetComponent<IBuffable>().AddBuff(new Buff(BuffType.Poison, cardEffect.value, -1));
+                        }
+                        break;
                 }
             }
+
+            manaLabel.text = $"{mana} / {mana_MAX}";
 
             bool frag = true;
             foreach(GameObject handCard in hand){
@@ -346,7 +356,7 @@ public class BattleManager : MonoBehaviour
                 }
             }
             if(frag){
-                turnEnd = true;
+                turnManager.PlayerEndTurn();
             }
         }
         else return;
@@ -393,7 +403,7 @@ public class BattleManager : MonoBehaviour
         yield return new WaitForSeconds(fadeTime);
     }
 
-    IEnumerator DiscardHandCoroutine(System.Action onComplete){
+    public IEnumerator DiscardHandCoroutine(System.Action onComplete){
         foreach (GameObject card in hand){
             CardData cardData = card.GetComponent<CardCTR>().cardData;
             // カードの親をDiscarPileに変更
@@ -419,12 +429,12 @@ public class BattleManager : MonoBehaviour
         // 敵が居ないなら戦闘終了
         if (enemies.Count == 0){
             Debug.Log("戦闘終了");
-            EndBattle();
+            turnManager.EndBattle();
             return;
         }
 
         // 倒した敵がボスなら他にボスが居ないか確認 → 居たら戦闘続行
-        foreach(GameObject enemy in enemies){
+        foreach(GameObject enemy in enemies.ToList()){
             if (enemy.GetComponent<EnemyCTR>().status.isBoss){
                 Debug.Log("ボスが居る！戦闘続行！");
                 return;
@@ -433,7 +443,7 @@ public class BattleManager : MonoBehaviour
         // ボスが居ないなら戦闘終了
         if (e.GetComponent<EnemyCTR>().status.isBoss){
             Debug.Log("ボスを倒した！戦闘終了！");
-            occupyingEnemies = null;
+            occupyingEnemies = new GameObject[4];;
             List<GameObject> deathEnemies = new List<GameObject>(enemies);
             foreach(GameObject enemy in deathEnemies){
                 enemy.GetComponent<IDamageable>().Death();
@@ -441,7 +451,7 @@ public class BattleManager : MonoBehaviour
             enemies.Clear();
             enemyActions.Clear();
             deathEnemies.Clear();
-            EndBattle();
+            turnManager.EndBattle();
         }
     }
 
@@ -483,20 +493,7 @@ public class BattleManager : MonoBehaviour
         enemies.Add(newEnemy);
     }
 
-    IEnumerator EnemyTurnCoroutine(){
-        Debug.Log("敵ターン開始");
-        foreach(EnemyAction action in enemyActions){
-            DoEnemyAction(action);
-            yield return new WaitForSeconds(0.4f);
-        }
-        enemyActions.Clear();
-        enemy_turn = false;
-        player_turn = true;
-        player_turn_start = true;
-        yield return null;
-    }
-
-    void DoEnemyAction(EnemyAction action){
+    public void DoEnemyAction(EnemyAction action){
         Debug.Log("敵の行動！");
         switch(action.actionType){
             case EnemyAction.ActionType.Attack:
@@ -517,7 +514,7 @@ public class BattleManager : MonoBehaviour
         Debug.Log("行動終了");
     }
 
-    void DeterminesEnemyActions(){
+    public void DeterminesEnemyActions(){
         EnemyAction action;
         foreach(GameObject e in enemies){
             enemyActions.Add(e.GetComponent<EnemyCTR>().DetermineEnemyAction());
@@ -525,8 +522,8 @@ public class BattleManager : MonoBehaviour
     }
 
     public void TurnEndButton(){
-        if(!handOutCardFlag){
-            turnEnd = true;
+        if(turnManager.CanPlayerAct() && !handOutCardFlag){
+            turnManager.PlayerEndTurn();
         }
     }
 

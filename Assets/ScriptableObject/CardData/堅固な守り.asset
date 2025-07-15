@@ -16,7 +16,7 @@ MonoBehaviour:
   cardName: "\u5805\u56FA\u306A\u5B88\u308A"
   cardCost: 2
   effectList:
-  - effectType: 6
+  - effectType: 7
     value: 10
     targetType: 0
   hand_ID: 0

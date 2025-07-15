@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19ec1741d820dd24ab229c7b9865a0c8, type: 3}
-  m_Name: "\u30AC\u30FC\u30C9"
+  m_Name: "\u6BD2\u85AC"
   m_EditorClassIdentifier: 
-  cardID: 2
-  cardName: "\u30AC\u30FC\u30C9"
+  cardID: 997
+  cardName: "\u6BD2\u85AC"
   cardCost: 1
   effectList:
-  - effectType: 7
-    value: 4
-    targetType: 0
+  - effectType: 6
+    value: 1
+    targetType: 1
   hand_ID: 0
   cardRarelity: 0
