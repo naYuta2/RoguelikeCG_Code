@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1820e70892a867d43997d9b990742fe0, type: 3}
+  m_Name: TestCardRewardEvent
+  m_EditorClassIdentifier: 
+  eventID: 999
+  eventName: TestCardRewardName
+  description: "\u5B9D\u7BB1\u3092\u767A\u898B\u3057\u305F\uFF01"
+  minFloor: 0
+  maxFloor: 0
+  weight: 1
+  rewardCards:
+  - {fileID: 11400000, guid: c2d70d0e19d91c943a605522ff9f4829, type: 2}
+  - {fileID: 11400000, guid: 92555951964dcb447aeb88c26f6c53ba, type: 2}
+  - {fileID: 11400000, guid: 89fb0484038f9aa4e9733b5c19acd0ac, type: 2}
