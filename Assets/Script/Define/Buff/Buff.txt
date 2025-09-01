@@ -1,0 +1,10 @@
+BuffType
+    AttackUp: カードの攻撃によって与えるダメージ +x
+    AttackDown: カードの攻撃によって与えるダメージ -x
+    GuardUp: カードの効果によって得るシールドの数 +x
+    GuardDown: カードの効果によって得るシールドの数 -x
+    DamageUp: 敵の攻撃によって受けるダメージの数 +x
+    DamageDown: 敵の攻撃によって受けるダメージの数 -x
+    Poison: ターン終了時HPがxだけ減少(ガード無視、定数ダメージ)
+    Burned: ターン終了時xダメージを受ける(ガード含む)
+    Regeneration: ターン終了時xだけHP回復
